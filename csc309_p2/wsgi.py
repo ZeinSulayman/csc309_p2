@@ -1,16 +1,16 @@
 """
-WSGI config for csc309_p2 project.
+ASGI config for csc309_p2 project.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+It exposes the ASGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
+https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'csc309_p2.settings')
 
-application = get_wsgi_application()
+application = get_asgi_application()
