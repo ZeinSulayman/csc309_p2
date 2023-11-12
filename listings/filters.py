@@ -5,11 +5,10 @@ class PetFilter(django_filters.FilterSet):
     class Meta:
         model = Pet
         fields = {
-            'shelter': ['exact'],
+            'owner': ['exact'],
             'status': ['exact'],
             'breed': ['exact', 'icontains'],
             'age': ['exact', 'lt', 'gt'],
             'size': ['exact'],
-            'color': ['exact', 'icontains'],
             'gender': ['exact'],
         }

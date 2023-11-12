@@ -65,6 +65,7 @@ class Pet(models.Model):
     size = models.IntegerField()
     description = models.TextField()
     location = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, default='Available')
 
     def __str__(self):
         return f"{self.name}'s listing"
