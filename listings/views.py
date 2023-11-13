@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import Pet
-from .serializers import PetSerializer
+from .serializers import PetListSerializer, PetCreateSerializer
 from .filters import PetFilter
 from rest_framework.pagination import PageNumberPagination
 
@@ -12,16 +12,25 @@ class PetPagination(PageNumberPagination):
 
 
 class PetListCreateView(generics.ListCreateAPIView):
-    queryset = Pet.objects.filter(status='available')
-    serializer_class = PetSerializer
+    queryset = Pet.objects.filter()
     filter_class = PetFilter
+    pagination_class = PetPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PetListSerializer
+        elif self.request.method == 'POST':
+            return PetCreateSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
         ordering = self.request.query_params.get('ordering', 'name')
         return queryset.order_by(ordering)
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class PetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
-    serializer_class = PetSerializer
+    serializer_class = PetCreateSerializer

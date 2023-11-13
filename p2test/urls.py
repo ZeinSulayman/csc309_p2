@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('petpal.urls')),
     path('', include('accounts.urls')),
     path('', include('comments.urls')),
+    path('', include('listings.urls')),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
 ] + \

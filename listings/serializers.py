@@ -1,14 +1,15 @@
 from rest_framework import serializers
-from .models import PetShelter, Pet
+from .models import Pet
 
 
-class ShelterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PetShelter
-        fields = '__all__'
-
-
-class PetSerializer(serializers.ModelSerializer):
+class PetListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
-        fields = '__all__'
+        fields = ('id', 'owner', 'name', 'breed', 'gender', 'age', 'size', 'description', 'location', 'status')
+
+
+class PetCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pet
+        exclude = ('owner',)
+
