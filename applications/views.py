@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from permissions import IsShelter, IsPetSeeker
 from rest_framework.pagination import PageNumberPagination
+from listings.models import Pet
 
 
 class ShelterApplicationsListView(APIView):
@@ -73,7 +74,7 @@ class PetApplicationView(APIView):
     permission_classes = [IsPetSeeker]
 
     def post(self, request, pet_id):
-        pet = PetDetail.objects.get(pk=pet_id)
+        pet = Pet.objects.get(pk=pet_id)
 
         # Check if the pet is available for adoption
         if not pet.available:
