@@ -1,9 +1,17 @@
 from django.db import models
-from accounts.models import User
+from accounts.models import User, PetShelter
 
 
 class PetApplication(models.Model):
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('pending', 'Pending'),
+        ('withdrawn', 'Withdrawn'),
+        ('denied', 'Denied'),
+        ('accepted', 'Accepted'),
+    ]
     applicant = models.ForeignKey(User, on_delete=models.CASCADE)
+    #pet_shelter = models.OneToOneField(PetShelter, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=10)
     last_name = models.CharField(max_length=10)
     dob = models.DateField()
@@ -16,7 +24,11 @@ class PetApplication(models.Model):
     criminal_history = models.CharField(max_length=10)
     previous_pet = models.BooleanField()
     description = models.CharField(max_length=10)
-
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='available',  # You can set a default value if needed
+    )
     #pet = models.ForeignKey()
     PENDING = models.BooleanField(default=True)
     ACCEPTED = models.BooleanField(default=False)
