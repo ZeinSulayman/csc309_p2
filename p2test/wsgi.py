@@ -1,5 +1,5 @@
 """
-WSGI config for csc309_p2 project.
+WSGI config for p2test project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'csc309_p2.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'p2test.settings')
 
 application = get_wsgi_application()
