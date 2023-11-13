@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'comments',
     'accounts',
+    'applications',
+    'notifications',
     'petpal',
     'api',
     'listings',
