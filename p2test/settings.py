@@ -69,7 +69,9 @@ INSTALLED_APPS = [
     'comments',
     'accounts',
     'petpal',
-    'api'
+    'api',
+    'listings',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
