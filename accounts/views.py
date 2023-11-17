@@ -144,6 +144,16 @@ class ShelterCreateView(generics.ListCreateAPIView):
         PetShelter.objects.create(**serializer.validated_data, user=self.request.user)
         #PetShelter.save()
 
+#this probably doesnt work and needs to be fixed
+class ShelterGetsSeekerView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsShelter]
+
+    def get_queryset(self):
+        seeker = PetSeeker.objects.filter(user_id = self.kwargs['pk'])
+        if seeker.application.status == "pending" and seeker.application.shelter_id == self.kwargs['shel'] :
+            return PetShelter.objects.filter(user=self.request.user)
+
+
 # view for registering users
 class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):

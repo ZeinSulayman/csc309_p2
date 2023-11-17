@@ -12,10 +12,12 @@ class PetApplicationUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PetApplication
         fields = ['status']
+        #fields = ['first_name']
 
     def validate_status(self, value):
         # Validate the allowed status transitions based on user type
-        user_is_shelter = self.context['request'].user.is_shelter
+        #user_is_shelter = self.context['request'].user.is_pet_shelter
+        user_is_shelter = self.instance.applicant.is_pet_shelter
         current_status = self.instance.status if self.instance else None
 
         if user_is_shelter:

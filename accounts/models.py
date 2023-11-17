@@ -36,8 +36,10 @@ class PetShelter(models.Model):
     shelter_id = models.AutoField(primary_key=True)
     shelter_name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
+    phone_num = models.CharField(max_length=255)
+    website = models.CharField(max_length=255)
     description = models.TextField()
-    pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
+    pic = models.ImageField(upload_to='pet_shelter_pics/', blank=True, null=True)
     #notificatoins = models.ManyToManyField()
     #pets = models.ManyToManyField()
 
