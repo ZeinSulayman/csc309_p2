@@ -5,9 +5,10 @@ from .serializers import PetApplicationUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from permissions import IsShelter, IsPetSeeker
+from .permissions import IsShelter, IsPetSeeker
 from rest_framework.pagination import PageNumberPagination
 from listings.models import Pet
+from accounts.models import PetShelter
 
 
 class ShelterApplicationsListView(APIView):
@@ -20,7 +21,9 @@ class ShelterApplicationsListView(APIView):
 
         # Apply pagination
         paginator = PageNumberPagination()
-        applications = PetApplication.objects.filter(pet__shelter=request.user.shelter)
+        #applications = PetApplication.objects.filter(pet__shelter=request.user.shelter)
+        shelter = PetShelter.objects.filter(user=self.request.user)
+        applications = PetApplication.objects.filter(pet_shelter=shelter)
         result_page = paginator.paginate_queryset(applications, request)
 
         # Apply status filter if provided
@@ -48,8 +51,8 @@ class PetApplicationUpdateView(APIView):
         application = self.get_object(application_id)
 
         # Check if the user has permission to update the application
-        if (request.user.is_shelter and application.PENDING) or \
-                (request.user.is_seeker and application.PENDING or application.ACCEPTED):
+        if (request.user.is_pet_shelter and application.PENDING) or \
+                (request.user.is_pet_seeker and application.PENDING or application.ACCEPTED):
             serializer = PetApplicationUpdateSerializer(application, data=request.data)
 
             if serializer.is_valid():
@@ -77,12 +80,14 @@ class PetApplicationView(APIView):
         pet = Pet.objects.get(pk=pet_id)
 
         # Check if the pet is available for adoption
-        if not pet.available:
+        #if not pet.available:
+        if not pet.status == 'Available':
             return Response({'error': 'Pet is not available for adoption.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = PetApplicationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(pet=pet, applicant=request.user)
+            #serializer.save(pet=pet, applicant=request.user)
+            serializer.save(applicant=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
