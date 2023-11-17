@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import Pet
-from .serializers import PetListSerializer, PetCreateSerializer
+from .serializers import PetListSerializer, PetCreateSerializer, PetEditSerializer
 from .filters import PetFilter
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsShelter, IsShelterOwner
@@ -22,19 +22,22 @@ class PetCreateView(generics.CreateAPIView):
 
 
 class PetListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
     queryset = Pet.objects.filter(status='available')
-    filter_class = PetFilter
-    pagination_class = PetPagination
     serializer_class = PetListSerializer
+    filter_class = PetFilter
+    pagination_class = PetPagination  # Add pagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
         ordering = self.request.query_params.get('ordering', 'name')
         return queryset.order_by(ordering)
 
+    def get(self, request, *args, **kwargs):
+        self.queryset = self.filter_queryset(self.get_queryset())
+        return super().get(request, *args, **kwargs)
+
 
 class PetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsShelterOwner]
     queryset = Pet.objects.all()
-    serializer_class = PetCreateSerializer
+    serializer_class = PetEditSerializer

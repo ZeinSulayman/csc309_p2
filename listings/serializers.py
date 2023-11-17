@@ -11,5 +11,12 @@ class PetListSerializer(serializers.ModelSerializer):
 class PetCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
-        exclude = ('owner',)
+        exclude = ('owner', 'status')
 
+
+class PetEditSerializer(serializers.ModelSerializer):
+    STATUS_CHOICES = [('available', 'Available'), ('adopted', 'Adopted'), ('pending', 'Pending'), ('withdrawn', 'Withdrawn')]
+    status = serializers.ChoiceField(choices=STATUS_CHOICES)
+    class Meta:
+        model = Pet
+        exclude = ('owner',)
