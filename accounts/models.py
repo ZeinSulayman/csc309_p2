@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User, AbstractUser
+from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -50,8 +50,8 @@ class PetSeeker(models.Model):
     )
     location = models.CharField(max_length=255)
     bio = models.TextField()
-    phone_num = models.CharField(max_length=255)
-    pref = models.TextField()
+    phone_num = models.CharField(max_length=255, default="4576324890")
+    pref = models.TextField(default="I want a good pet")
     pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
 
     #applications = models.ManyToManyField()
