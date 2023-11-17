@@ -7,6 +7,7 @@ from .models import Notification
 from .serializers import NotifSerializer
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from .permissions import IsNotiOwner
 
 
 
@@ -14,6 +15,7 @@ class NotifCreateView(generics.ListCreateAPIView):
     # Your view logic here for creating a shelter comment
     # ...
     serializer_class = NotifSerializer
+    permission_classes = [IsNotiOwner]
 
     def get_queryset(self):
         # Filter comments based on the specific shelter or pet seeker
