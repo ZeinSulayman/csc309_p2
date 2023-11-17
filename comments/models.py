@@ -1,11 +1,13 @@
 from django.db import models
-#from p2test.accounts.models import User, PetShelter, Application
+# from p2test.accounts.models import User, PetShelter, Application
+
 
 class AppComments(models.Model):
     content = models.TextField()
     user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
     app = models.ForeignKey("accounts.Application", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class ShelterComments(models.Model):
     content = models.TextField()

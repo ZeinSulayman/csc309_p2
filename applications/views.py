@@ -5,7 +5,7 @@ from .serializers import PetApplicationUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from permissions import IsShelter, IsPetSeeker
+from .permissions import IsShelter, IsPetSeeker
 from rest_framework.pagination import PageNumberPagination
 from listings.models import Pet
 
@@ -48,8 +48,8 @@ class PetApplicationUpdateView(APIView):
         application = self.get_object(application_id)
 
         # Check if the user has permission to update the application
-        if (request.user.is_shelter and application.PENDING) or \
-                (request.user.is_seeker and application.PENDING or application.ACCEPTED):
+        if (request.user.is_shelter and application.status == "pending") or \
+                (request.user.is_seeker and application.status == "pending" or application.status == "accepted"):
             serializer = PetApplicationUpdateSerializer(application, data=request.data)
 
             if serializer.is_valid():
