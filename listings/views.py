@@ -32,19 +32,15 @@ class PetListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Pet.objects.all()
 
-        # Filtering by status
         status_param = self.request.query_params.get('status', 'available')
         if status_param.lower() != 'all':
             queryset = queryset.filter(status=status_param)
 
-        # Sorting by multiple parameters (name and age)
         ordering_params = self.request.query_params.getlist('sort')
 
         if ordering_params:
-            # If ordering parameters are provided, use them for sorting
             queryset = queryset.order_by(*ordering_params, 'name', 'age')
         else:
-            # If no ordering parameters are provided, do not apply any sorting
             queryset = queryset.order_by()
 
         return queryset
