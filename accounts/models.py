@@ -39,9 +39,9 @@ class PetShelter(models.Model):
     phone_num = models.CharField(max_length=255)
     website = models.CharField(max_length=255)
     description = models.TextField()
-    pic = models.ImageField(upload_to='pet_shelter_pics/', blank=True, null=True)
-    #notificatoins = models.ManyToManyField()
-    #pets = models.ManyToManyField()
+    pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
+    # notifications = models.ManyToManyField()
+    # pets = models.ManyToManyField()
 
     def __str__(self):
         return f"{self.user.username}'s PetShelter Profile"
@@ -52,12 +52,12 @@ class PetSeeker(models.Model):
     )
     location = models.CharField(max_length=255)
     bio = models.TextField()
-    phone_num = models.CharField(max_length=255)
-    pref = models.TextField()
+    phone_num = models.CharField(max_length=255, null=True)
+    pref = models.TextField(null=True)
     pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
 
-    #applications = models.ManyToManyField()
-    #notificatoins = models.ManyToManyField()
+    # applications = models.ManyToManyField()
+    # notifications = models.ManyToManyField()
 
     def __str__(self):
         return f"{self.user.username}'s PetSeeker Profile"
