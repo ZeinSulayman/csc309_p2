@@ -23,7 +23,7 @@ class PetCreateView(generics.CreateAPIView):
 
 class PetListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Pet.objects.filter(status='available')
+    queryset = Pet.objects.filter(status='Available')
     filter_class = PetFilter
     pagination_class = PetPagination
     serializer_class = PetListSerializer
