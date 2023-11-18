@@ -5,6 +5,7 @@ from .filters import PetFilter
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsShelter, IsShelterOwner
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class PetPagination(PageNumberPagination):
@@ -22,20 +23,31 @@ class PetCreateView(generics.CreateAPIView):
 
 
 class PetListView(generics.ListAPIView):
-    queryset = Pet.objects.filter(status='available')
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PetFilter
+    pagination_class = PetPagination
     serializer_class = PetListSerializer
-    filter_class = PetFilter
-    pagination_class = PetPagination  # Add pagination
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        ordering = self.request.query_params.get('ordering', 'name')
-        return queryset.order_by(ordering)
+        queryset = Pet.objects.all()
 
-    def get(self, request, *args, **kwargs):
-        self.queryset = self.filter_queryset(self.get_queryset())
-        return super().get(request, *args, **kwargs)
+        # Filtering by status
+        status_param = self.request.query_params.get('status', 'available')
+        if status_param.lower() != 'all':
+            queryset = queryset.filter(status=status_param)
 
+        # Sorting by multiple parameters (name and age)
+        ordering_params = self.request.query_params.getlist('sort')
+
+        if ordering_params:
+            # If ordering parameters are provided, use them for sorting
+            queryset = queryset.order_by(*ordering_params, 'name', 'age')
+        else:
+            # If no ordering parameters are provided, do not apply any sorting
+            queryset = queryset.order_by()
+
+        return queryset
 
 class PetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsShelterOwner]
