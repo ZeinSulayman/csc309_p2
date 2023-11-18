@@ -1,8 +1,11 @@
-from .serializers import PetApplicationSerializer
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import PetApplicationSerializer, PetApplicationDetailSerializer, \
+    PetApplicationShelterUpdateSerializer, PetApplicationSeekerUpdateSerializer
 from django.shortcuts import get_object_or_404
 from .models import PetApplication
-from .serializers import PetApplicationUpdateSerializer
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .permissions import IsShelter, IsPetSeeker
@@ -10,47 +13,65 @@ from rest_framework.pagination import PageNumberPagination
 from listings.models import Pet
 
 
-class ShelterApplicationsListView(APIView):
+class ShelterApplicationsListView(ListAPIView):
     permission_classes = [IsShelter]
+    serializer_class = PetApplicationSerializer
 
-    def get(self, request):
+    def get_queryset(self):
         # Retrieve query parameters for status filtering, sorting, and pagination
-        status_filter = request.query_params.get('status', None)
-        sort_by = request.query_params.get('sort_by', None)
-
-        # Apply pagination
-        paginator = PageNumberPagination()
-        applications = PetApplication.objects.filter(pet__shelter=request.user.shelter)
-        result_page = paginator.paginate_queryset(applications, request)
+        status_filter = self.request.query_params.get('status', None)
+        sort_by = self.request.query_params.get('sort_by', None)
 
         # Apply status filter if provided
+        queryset = PetApplication.objects.filter(pet__owner=self.request.user)
         if status_filter:
-            result_page = result_page.filter(status=status_filter)
+            queryset = queryset.filter(status=status_filter)
 
         # Apply sorting if provided
         if sort_by:
             if sort_by == 'created':
-                result_page = sorted(result_page, key=lambda x: x.date_created)
+                queryset = queryset.order_by('date_created')
             elif sort_by == 'modified':
-                result_page = sorted(result_page, key=lambda x: x.last_modified, reverse=True)
+                queryset = queryset.order_by('-last_modified')
 
-        serializer = PetApplicationSerializer(result_page, many=True)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        # Apply pagination
+        paginator = PageNumberPagination()
+        applications = self.get_queryset()
+        result_page = paginator.paginate_queryset(applications, request)
+
+        serializer = PetApplicationDetailSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
 
-class PetApplicationUpdateView(APIView):
-    permission_classes = [IsShelter | IsPetSeeker]
+class PetApplicationUpdateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
 
     def get_object(self, application_id):
         return get_object_or_404(PetApplication, pk=application_id)
 
-    def put(self, request, application_id):
+    def get_serializer_class(self):
+        # Determine the user type and return the appropriate serializer class
+        if self.request.user.is_pet_shelter:
+            return PetApplicationShelterUpdateSerializer
+        elif self.request.user.is_pet_seeker:
+            return PetApplicationSeekerUpdateSerializer
+        # Add more cases for other user types if needed
+        else:
+            # Use a default serializer class or raise an exception
+            return PetApplicationShelterUpdateSerializer
+
+    def create(self, request, application_id, *args, **kwargs):
         application = self.get_object(application_id)
 
         # Check if the user has permission to update the application
-        if (request.user.is_shelter and application.status == "pending") or \
-                (request.user.is_seeker and application.status == "pending" or application.status == "accepted"):
-            serializer = PetApplicationUpdateSerializer(application, data=request.data)
+        if (request.user.is_pet_shelter and application.status == "pending") or \
+                (request.user.is_pet_seeker and application.status in ["pending", "accepted"]):
+            # Get the appropriate serializer class based on user type
+            serializer_class = self.get_serializer_class()
+            serializer = serializer_class(application, data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -66,23 +87,29 @@ class PetApplicationDetailView(APIView):
 
     def get(self, request, application_id):
         application = get_object_or_404(PetApplication, pk=application_id, applicant=request.user)
-        serializer = PetApplicationSerializer(application)
+        serializer = PetApplicationDetailSerializer(application)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PetApplicationView(APIView):
-    permission_classes = [IsPetSeeker]
+class PetApplicationView(CreateAPIView):
+    serializer_class = PetApplicationSerializer
+    permission_classes = [IsAuthenticated, IsPetSeeker]
 
-    def post(self, request, pet_id):
+    def create(self, request, *args, **kwargs):
+        pet_id = self.kwargs.get('pet_id')
         pet = Pet.objects.get(pk=pet_id)
 
         # Check if the pet is available for adoption
-        if not pet.available:
+        if not pet.status == 'Available':
             return Response({'error': 'Pet is not available for adoption.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = PetApplicationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(pet=pet, applicant=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, pet)
+        headers = self.get_success_headers(serializer.data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer, pet):
+
+        serializer.save(pet=pet, applicant=self.request.user)

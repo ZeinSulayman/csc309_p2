@@ -22,7 +22,7 @@ class PetApplication(models.Model):
     hours_away_weekends = models.CharField(max_length=255)
     medical_history = models.CharField(max_length=255)
     criminal_history = models.CharField(max_length=255)
-    previous_pet = models.BooleanField()
+    first_time_pet_owner = models.BooleanField()
     description = models.CharField(max_length=255)
 
     pet = models.ForeignKey("listings.Pet", on_delete=models.CASCADE)
