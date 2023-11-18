@@ -11,6 +11,7 @@ from rest_framework import status
 from .permissions import IsShelter, IsPetSeeker
 from rest_framework.pagination import PageNumberPagination
 from listings.models import Pet
+from accounts.models import PetShelter
 
 
 class ShelterApplicationsListView(ListAPIView):
@@ -21,6 +22,7 @@ class ShelterApplicationsListView(ListAPIView):
         # Retrieve query parameters for status filtering, sorting, and pagination
         status_filter = self.request.query_params.get('status', None)
         sort_by = self.request.query_params.get('sort_by', None)
+
 
         # Apply status filter if provided
         queryset = PetApplication.objects.filter(pet__owner=self.request.user)
@@ -73,6 +75,7 @@ class PetApplicationUpdateView(CreateAPIView):
             serializer_class = self.get_serializer_class()
             serializer = serializer_class(application, data=request.data)
 
+
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -111,5 +114,4 @@ class PetApplicationView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer, pet):
-
         serializer.save(pet=pet, applicant=self.request.user)
