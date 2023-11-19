@@ -24,6 +24,7 @@ class NotifListView(generics.ListAPIView):
     filterset_class = NotificationFilter
     pagination_class = NotificationPagination
     serializer_class = NotifSerializer
+    permission_classes = [IsNotiOwner]
 
     def get_queryset(self):
         queryset = Notification.objects.all()
@@ -47,7 +48,7 @@ class NotifListView(generics.ListAPIView):
 class NotifCreateView(generics.ListCreateAPIView):
 
     serializer_class = NotifSerializer
-    permission_classes = [IsNotiOwner]
+    #permission_classes = [IsNotiOwner]
 
     def get_queryset(self):
         # Filter comments based on the specific shelter or pet seeker
@@ -71,6 +72,7 @@ class NotifCreateView(generics.ListCreateAPIView):
 
 class NotificationUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         serializer_class = NotifEditSerializer
+        permission_classes = [IsNotiOwner]
 
         def perform_update(self, serializer):
             # Only update the 'read' field

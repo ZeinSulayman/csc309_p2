@@ -162,7 +162,7 @@ class ShelterGetsSeekerView(generics.RetrieveAPIView):
     def get_object(self):
         seeker = get_object_or_404(User, id=self.kwargs['pk'])
         app = get_object_or_404(PetApplication, applicant = seeker)
-        if app.status != "denied" or app.status != "withdrawn" :
+        if app.status == "pending":
             return get_object_or_404(PetSeeker, user = seeker)
     """def get_queryset(self):
         seeker = User.objects.filter(id = self.kwargs['pk'])

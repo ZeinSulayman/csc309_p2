@@ -6,9 +6,11 @@ from django.shortcuts import get_object_or_404
 from .permissions import IsShelterOwner, IsAppOwner
 from rest_framework.pagination import PageNumberPagination
 from accounts.models import PetShelter, Application
+from applications.models import PetApplication
+from django.utils import timezone
 #from .permissions import IsCommentOwner
 
-
+"""
 class AppCommentCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsShelterOwner, IsAppOwner]
 
@@ -31,7 +33,7 @@ class AppCommentListView(generics.ListAPIView):
         elif pet_seeker_id:
             return AppComments.objects.filter(pet_seeker_id=pet_seeker_id)
 
-    serializer_class = AppCommentSerializer
+    serializer_class = AppCommentSerializer"""
 
 class ShelterCommentListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -67,7 +69,11 @@ class AppCommentListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # Automatically set the user based on the logged-in user
         application_id = self.kwargs.get('application_id')
-        application = get_object_or_404(Application, id=application_id)
+        application = get_object_or_404(PetApplication, id=application_id)
+        application.last_modified = timezone.now()
+        application.save()
+        #application = get_object_or_404(Application, user=self.request.user)
         serializer.save(user=self.request.user, app=application)
+        #serializer.save(user=self.request.user)
 
     serializer_class = AppCommentSerializer

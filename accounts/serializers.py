@@ -6,6 +6,7 @@ from .models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import User, PetShelter, PetSeeker
+from django.contrib.auth.password_validation import validate_password
 from django.db import models
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -36,16 +37,36 @@ class UserSerializer(serializers.ModelSerializer):
     """location = models.CharField(max_length=200)
     shelter_name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)"""
+    password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
         fields = "__all__"
 
+    def validate_password2(self, value):
+        # Check if password and password2 match
+        if self.initial_data['password'] != value:
+            raise serializers.ValidationError("Passwords do not match.")
+        return value
+
+    """def validate_password(self, value):
+        # Validate the password using Django's password validators
+        validate_password(value)
+        return value"""
+
     def create(self, validated_data):
-        user = User.objects.create(email=validated_data['email'],username=validated_data['username'], is_pet_shelter=True)
+        # Remove the password2 field before creating the user
+        validated_data.pop('password2', None)
+        user = User.objects.create(email=validated_data['email'], username=validated_data['username'],is_pet_shelter=validated_data['is_pet_shelter'], is_pet_seeker=validated_data['is_pet_seeker'])
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+        """ def create(self, validated_data):
+        user = User.objects.create(email=validated_data['email'],username=validated_data['username'], is_pet_shelter=True)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user"""
         #fields = ('id', 'username', 'email', 'password', 'is_pet_shelter', 'is_pet_seeker')
         #fields = ('id', 'username', 'email', 'password', 'is_pet_shelter', 'is_pet_seeker', 'pet_shelter', 'pet_seeker')  # Add other fields as needed
 
