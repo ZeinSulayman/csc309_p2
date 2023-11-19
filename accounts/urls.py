@@ -24,15 +24,21 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     #newuser
-    path('create/', UserCreateView.as_view(), name='user-create'),
-    path('create/seeker/', SeekerCreateView.as_view(), name='seeker-create'),
-    path('create/shelter/', ShelterCreateView.as_view(), name='shelter-create'),
+    #path('create/', UserCreateView.as_view(), name='user-create'),
+    path('newuser/', UserCreateView.as_view(), name='user-create'),
+    #path('create/seeker/', SeekerCreateView.as_view(), name='seeker-create'),
+    path('newuser/seeker/', SeekerCreateView.as_view(), name='seeker-create'),
+    #path('create/shelter/', ShelterCreateView.as_view(), name='shelter-create'),
+    path('newuser/shelter/', ShelterCreateView.as_view(), name='shelter-create'),
     #user/pk/editor    editor may not be needed
     path('user/<int:pk>/', UserRetrieveUpdateDestroy.as_view(), name='user-update'),
     #seeker/pk/editor
-    path('seeker/update/', SeekerRetrieveUpdateDestroy.as_view(), name='seeker-update'),
+    path('seeker/', SeekerRetrieveUpdateDestroy.as_view(), name='seeker-update'),
+    #path('seeker/update/', SeekerRetrieveUpdateDestroy.as_view(), name='seeker-update'),
     #shelter/pk/editor
-    path('shelter/update/', ShelterRetrieveUpdateDestroy.as_view(), name='shelter-update'),
+    path('shelter/', ShelterRetrieveUpdateDestroy.as_view(), name='shelter-update'),
+    #path('shelter/update/', ShelterRetrieveUpdateDestroy.as_view(), name='shelter-update'),
+    #path('shelter/update/', ShelterRetrieveUpdateDestroy.as_view(), name='shelter-update'),
     path('shelter/<int:pk>/', ShelterRetrieve.as_view(), name='shelter-get'),
     path('shelter/applicant/<int:pk>/', ShelterGetsSeekerView.as_view(), name='shelter-applicant'),
     #user/pk

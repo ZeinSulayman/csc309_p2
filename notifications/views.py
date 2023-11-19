@@ -38,20 +38,23 @@ class NotifListView(generics.ListAPIView):
             queryset = queryset.order_by(*ordering_params, 'created_at')
         else:
             # If no ordering parameters are provided, do not apply any sorting
-            queryset = queryset.order_by()
+            #queryset = queryset.order_by()
+            queryset = queryset.order_by('-created_at')
 
         return queryset
 
 
 class NotifCreateView(generics.ListCreateAPIView):
-    # Your view logic here for creating a shelter comment
-    # ...
+
     serializer_class = NotifSerializer
     permission_classes = [IsNotiOwner]
 
     def get_queryset(self):
         # Filter comments based on the specific shelter or pet seeker
-        queryset = Notification.objects.filter(user=self.request.user, read=self.kwargs['status'])
+        read = False
+        if self.kwargs['status'] == 'read':
+            read = True
+        queryset = Notification.objects.filter(user=self.request.user, read=read)
         queryset = queryset.order_by('-created_at')
         return queryset
 

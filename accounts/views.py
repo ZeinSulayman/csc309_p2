@@ -127,11 +127,21 @@ class SeekerRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return get_object_or_404(PetSeeker, user=self.request.user)
 
+    def perform_destroy(self, instance):
+        user_id = instance.user.id
+        User.objects.filter(id=user_id).delete()
+        instance.delete()
+
 class ShelterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PetShelterSerializer
     permission_classes = [IsShelter]
     def get_object(self):
         return get_object_or_404(PetShelter, user=self.request.user)
+
+    def perform_destroy(self, instance):
+        user_id = instance.user.id
+        User.objects.filter(id=user_id).delete()
+        instance.delete()
 
 class ShelterCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsShelter]
