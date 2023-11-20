@@ -8,3 +8,9 @@ class NotifSerializer(serializers.ModelSerializer):
         model = Notification
         fields = ('content','link')
 
+
+class NotifEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notification
+        fields = ('read',)
