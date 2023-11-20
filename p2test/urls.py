@@ -25,7 +25,6 @@ from drf_yasg.views import get_schema_view
 schema_view = get_schema_view( openapi.Info( title="Pets API", default_version='1.0.0', description="API documentation of app" ), public=True )
 
 urlpatterns = [
-                  path('', include('petpal.urls')),
                   path('', include('accounts.urls')),
                   path('', include('comments.urls')),
                   path('', include('listings.urls')),
