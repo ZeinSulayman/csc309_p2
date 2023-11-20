@@ -5,38 +5,20 @@ from .serializers import AppCommentSerializer, ShelterCommentSerializer
 from django.shortcuts import get_object_or_404
 from .permissions import IsShelterOwner, IsAppOwner
 from rest_framework.pagination import PageNumberPagination
-from accounts.models import PetShelter, Application
+from accounts.models import PetShelter
 from applications.models import PetApplication
 from django.utils import timezone
 #from .permissions import IsCommentOwner
 
-"""
-class AppCommentCreateView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated, IsShelterOwner, IsAppOwner]
+class PetPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
-    def perform_create(self, serializer):
-        # Automatically set the user based on the logged-in user
-        serializer.save(user=self.request.user)
-
-    serializer_class = AppCommentSerializer
-
-class AppCommentListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated, IsShelterOwner, IsAppOwner]
-
-    def get_queryset(self):
-        # Filter comments based on the specific shelter or pet seeker
-        shelter_id = self.kwargs.get('shelter_id')  # Adjust based on your URL pattern
-        pet_seeker_id = self.kwargs.get('pet_seeker_id')  # Adjust based on your URL pattern
-
-        if shelter_id:
-            return AppComments.objects.filter(shelter_id=shelter_id)
-        elif pet_seeker_id:
-            return AppComments.objects.filter(pet_seeker_id=pet_seeker_id)
-
-    serializer_class = AppCommentSerializer"""
 
 class ShelterCommentListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = PetPagination
 
     def get_queryset(self):
         # Filter comments based on the specific shelter or pet seeker
@@ -58,6 +40,7 @@ class ShelterCommentListCreateView(generics.ListCreateAPIView):
 ##need to make sure permissions work
 class AppCommentListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsShelterOwner, IsAppOwner]
+    pagination_class = PetPagination
 
     def get_queryset(self):
         # Filter comments based on the specific shelter or pet seeker
