@@ -39,7 +39,7 @@ class PetShelter(models.Model):
     phone_num = models.CharField(max_length=255)
     website = models.CharField(max_length=255)
     description = models.TextField()
-    pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
+    pic = models.ImageField(upload_to='pics/', blank=True, null=True)
     # notifications = models.ManyToManyField()
     # pets = models.ManyToManyField()
 
@@ -54,36 +54,14 @@ class PetSeeker(models.Model):
     bio = models.TextField()
     phone_num = models.CharField(max_length=255, null=True)
     pref = models.TextField(null=True)
-    pic = models.ImageField(upload_to='pet_seeker_pics/', blank=True, null=True)
-
-    # applications = models.ManyToManyField()
-    # notifications = models.ManyToManyField()
+    pic = models.ImageField(upload_to='pics/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s PetSeeker Profile"
 
-
+"""
 class Application(models.Model):
     content = models.TextField()
     user = models.OneToOneField(
         'User', on_delete=models.CASCADE, primary_key=True, related_name='app'
-    )
-
-
-
-
-
-
-"""
-class PetSeeker(models.Model):
-    #user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pet_seeker')
-    name = models.CharField(max_length=40)
-    owner = models.ForeignKey(User, related_name='seeker',
-                              null=True, on_delete=models.SET_NULL,
-                              blank=True)
-    # Add other fields specific to pet seekers (e.g., address, phone number, etc.)
-
-class PetShelter(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pet_shelter')
-    # Add other fields specific to pet shelters (e.g., location, shelter name, etc.)
-"""
+    )"""

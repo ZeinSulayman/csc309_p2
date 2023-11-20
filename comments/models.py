@@ -5,7 +5,8 @@ from django.db import models
 class AppComments(models.Model):
     content = models.TextField()
     user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
-    app = models.ForeignKey("accounts.Application", on_delete=models.CASCADE)
+    #app = models.ForeignKey("accounts.Application", on_delete=models.CASCADE)
+    app = models.ForeignKey("applications.PetApplication", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

@@ -28,13 +28,14 @@ class ShelterApplicationsListView(ListAPIView):
         queryset = PetApplication.objects.filter(pet__owner=self.request.user)
         if status_filter:
             queryset = queryset.filter(status=status_filter)
-
+        queryset = queryset.order_by('date_created')
+        queryset = queryset.order_by('-last_modified')
         # Apply sorting if provided
-        if sort_by:
+        """if sort_by:
             if sort_by == 'created':
                 queryset = queryset.order_by('date_created')
             elif sort_by == 'modified':
-                queryset = queryset.order_by('-last_modified')
+                queryset = queryset.order_by('-last_modified')"""
 
         return queryset
 
@@ -103,7 +104,7 @@ class PetApplicationView(CreateAPIView):
         pet = Pet.objects.get(pk=pet_id)
 
         # Check if the pet is available for adoption
-        if not pet.status == 'Available':
+        if not pet.status == 'available':
             return Response({'error': 'Pet is not available for adoption.'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
@@ -114,4 +115,4 @@ class PetApplicationView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer, pet):
-        serializer.save(pet=pet, applicant=self.request.user)
+        serializer.save(pet=pet, applicant=self.request.user, status="pending")

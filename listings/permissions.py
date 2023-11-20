@@ -12,6 +12,5 @@ class IsShelterOwner(permissions.BasePermission):
         pet_id = view.kwargs.get('pk')
         pet_instance = Pet.objects.get(id=pet_id)
         user = request.user
-        print(pet_instance.owner)
-        print(user.pet_shelter.shelter_id)
-        return hasattr(user, 'pet_shelter') and user.pet_shelter.shelter_id == pet_instance.owner.id
+        return hasattr(user, 'pet_shelter') and user == pet_instance.owner
+        #return hasattr(user, 'pet_shelter') and user.pet_shelter.shelter_id == pet_instance.owner
